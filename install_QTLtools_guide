@@ -1,0 +1,16 @@
+Guide to installing QTLtools on Hoffman: 
+# use version 1.0, since 1.2 requires additional dependencies
+# not sure the gcc version you need, but I used gcc/9.3.0
+
+- first install with 'wget https://qtltools.github.io/qtltools/binaries/QTLtools_1.0_CentOS6.8_x86_64.tar.gz'
+- then untar with 'tar -xvf QTL...{rest of filename}.tar.gz'
+- chmod u+x {filename_of_generated_binary} #make sure you don't chmod u+x the .tar.gz file by accident
+- then './{binary}', make sure no errors come up
+
+now you just have to add the binary to your path 
+for me, this was how i did it, although there are many different ways 
+
+- add binary to '~/.local/bin'
+- in my .bash_profile, add the following line: export PATH="$PATH:$HOME/.local/bin"
+- source my .bash_profile, so either do 'source .bash_profile' or '. .bash_profile' or just exit and restart terminal
+- finally rename the binary in '~/.local/bin' to QTLtools; if running 'QTLtools --help' works correctly in all your directories, then you're done!
