@@ -13,9 +13,9 @@ CHROMOSOME_ARRAY = list(range(1,22+1)) #2nd number is exclusive
 SOFTWARES = ["featureCounts", "kallisto_scaled_tpm"]
 
 #testing
-CHROMOSOME_ARRAY = CHROMOSOME_ARRAY[:1]
-SOFTWARES = SOFTWARES[:1]
-PASS_ARRAY = PASS_ARRAY[:1]
+#CHROMOSOME_ARRAY = CHROMOSOME_ARRAY[:1]
+#SOFTWARES = SOFTWARES[:1]
+#PASS_ARRAY = PASS_ARRAY[:1]
 
 
 rule all: 
