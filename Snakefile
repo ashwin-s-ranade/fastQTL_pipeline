@@ -3,43 +3,50 @@
 BASE = '/u/project/zarlab/hjp/geuvadis_data'
 OUTPUT_DIR = '/u/home/a/asr123/project-zarlab/fastQTL_pipeline'
 
-NOMINAL = OUTPUT_DIR + '/nominal_output'
-PERMUTATION = OUTPUT_DIR + '/permutation_output'
-PASS_ARRAY = [NOMINAL,PERMUTATION]
 
 COVARIATE = BASE + '/qtltools/qtl_shared/covariates.txt'
 KEY_FILE = BASE + '/annotation/yri_sample_intersection.txt'
 GENOTYPES = BASE + '/annotation/genotypes_yri.vcf.gz'
 
+PASS_ARRAY = ["nominal_output", "permutation_output"]
 CHROMOSOME_ARRAY = list(range(1,22+1)) #2nd number is exclusive
 SOFTWARES = ["featureCounts", "kallisto_scaled_tpm"]
 
+#testing
+CHROMOSOME_ARRAY = CHROMOSOME_ARRAY[:1]
+SOFTWARES = SOFTWARES[:1]
+PASS_ARRAY = PASS_ARRAY[:1]
+
+
 rule all: 
     input: 
-        expand('{pass}' + '/{program}_results/{chr_num}_nominals.txt', pass=PASS_ARRAY, program=SOFTWARES, chr_num=CHROMOSOME_ARRAY)
+       # expand(OUTPUT_DIR + '/{pass}_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES, pass=PASS_ARRAY)
+        expand(OUTPUT_DIR + '/nominal_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES),
+        expand(OUTPUT_DIR + '/permutation_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES)
 
-#default cis-window size is 1e6
-#do nominal and permutation at the same time
 rule getBoth: 
     input: 
-        genotypes = GENOTYPES, 
-        phenotypes = BASE + '/qtltools/{program}/qqnorm{chr_num}.bed.gz', 
-        covariates = COVARIATES,
-        all_samples = KEY_FILE
+        GENOTYPES, 
+        COVARIATE,
+        KEY_FILE,
+        phenotypes = BASE + '/qtltools/{program}/qqnorm_{chr_num}.bed.gz' 
+    
     output: 
-        NOMINAL + '/{program}_results/nominal_{chr_num}.txt',
-        PERMUTATION + '/{program}_results/nominal_{chr_num}.txt'
+        #expand(OUTPUT_DIR + '/{pass}/{program}_results/{chr_num}.txt', pass=PASS_ARRAY)
+        OUTPUT_DIR + '/nominal_output/{program}_results/{chr_num}.txt',
+        OUTPUT_DIR + '/permutation_output/{program}_results/{chr_num}.txt'
+    
     shell: 
-        "QTLtools cis --vcf {input.genotypes}"
+        "QTLtools cis --vcf {GENOTYPES}"
         " --bed {input.phenotypes}"
-        " --cov {input.covariates}"
+        " --cov {COVARIATE}"
         " --nominal 1"
         " --out {output[0]}"
-        " --include-sample {input.all_samples}"
+        " --include-sample {KEY_FILE}"
         "&&"
-        "QTLtools cis --vcf {input.genotypes}"
+        "QTLtools cis --vcf {GENOTYPES}"
         " --bed {input.phenotypes}"
-        " --cov {input.covariates}"
+        " --cov {COVARIATE}"
         " --permute 1000"
         " --out {output[1]}"
-        " --include-sample {input.all_samples}"
+        " --include-sample {KEY_FILE}"
