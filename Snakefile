@@ -12,14 +12,6 @@ PASS_ARRAY = ["nominal_output", "permutation_output"]
 CHROMOSOME_ARRAY = list(range(1,22+1)) #2nd number is exclusive
 SOFTWARES = ["featureCounts", "kallisto_scaled_tpm"]
 
-#old rule all
-#rule all: 
-#    input: 
-       # expand(OUTPUT_DIR + '/{pass}_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES, pass=PASS_ARRAY)
-#        expand(OUTPUT_DIR + '/nominal_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES),
-#        expand(OUTPUT_DIR + '/permutation_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES)
-
-#with compression 
 rule all: 
     input: 
         expand(OUTPUT_DIR + '/nominal_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES),
