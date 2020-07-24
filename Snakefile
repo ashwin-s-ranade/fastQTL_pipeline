@@ -12,17 +12,28 @@ PASS_ARRAY = ["nominal_output", "permutation_output"]
 CHROMOSOME_ARRAY = list(range(1,22+1)) #2nd number is exclusive
 SOFTWARES = ["featureCounts", "kallisto_scaled_tpm"]
 
-#testing
-#CHROMOSOME_ARRAY = CHROMOSOME_ARRAY[:1]
-#SOFTWARES = SOFTWARES[:1]
-#PASS_ARRAY = PASS_ARRAY[:1]
+#old rule all
+#rule all: 
+#    input: 
+       # expand(OUTPUT_DIR + '/{pass}_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES, pass=PASS_ARRAY)
+#        expand(OUTPUT_DIR + '/nominal_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES),
+#        expand(OUTPUT_DIR + '/permutation_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES)
 
-
+#with compression 
 rule all: 
     input: 
-       # expand(OUTPUT_DIR + '/{pass}_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES, pass=PASS_ARRAY)
         expand(OUTPUT_DIR + '/nominal_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES),
-        expand(OUTPUT_DIR + '/permutation_output/{program}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY, program=SOFTWARES)
+        expand(OUTPUT_DIR + '/permutation_output/{program}_results/{permutations_{program}_full.txt.gz', program=SOFTWARES)
+
+#in shell, input evaluates to space separated files 
+#braces must be escaped to prevent expansion in expand statement
+rule compress: 
+    input: 
+        expand(OUTPUT_DIR + '/permutation_output/{{program}}_results/{chr_num}.txt', chr_num=CHROMOSOME_ARRAY)
+    output: 
+        OUTPUT_DIR + '/permutation_output/{program}_results/permutations_{program}_full.txt.gz' 
+    shell: 
+        "cat {input} | gzip -c > {output}"
 
 rule getBoth: 
     input: 
